@@ -386,59 +386,59 @@ def page_asset_register():
     if remembered_office in OFFICES:
         default_office_idx = OFFICES.index(remembered_office)
 
-    with st.form("asset_register_form", clear_on_submit=False):
-        c1, c2 = st.columns(2)
-        with c1:
-            office = st.selectbox("Office *", OFFICES, index=default_office_idx)
-        with c2:
-            location = suggestable_select("Location *", df["Location"].tolist() if not df.empty else [],
-                                           key="reg_location", required=True)
+    c1, c2 = st.columns(2)
+    with c1:
+        office = st.selectbox("Office *", OFFICES, index=default_office_idx)
+    with c2:
+        location = suggestable_select("Location *", df["Location"].tolist() if not df.empty else [],
+                                       key="reg_location", required=True)
 
-        c3, c4 = st.columns(2)
-        with c3:
-            sub_location = st.text_input("Sub Location")
-        with c4:
-            main_category = suggestable_select("Main Category *",
-                                                 df["Main Category"].tolist() if not df.empty else [],
-                                                 key="reg_main_cat", required=True)
+    c3, c4 = st.columns(2)
+    with c3:
+        sub_location = st.text_input("Sub Location", key="reg_sub_location")
+    with c4:
+        main_category = suggestable_select("Main Category *",
+                                             df["Main Category"].tolist() if not df.empty else [],
+                                             key="reg_main_cat", required=True)
 
-        c5, c6 = st.columns(2)
-        with c5:
-            sub_category = st.text_input("Sub Category")
-        with c6:
-            item_name = st.text_input("Item Name *")
+    c5, c6 = st.columns(2)
+    with c5:
+        sub_category = st.text_input("Sub Category", key="reg_sub_category")
+    with c6:
+        item_name = st.text_input("Item Name *", key="reg_item_name")
 
-        description = st.text_area("Description", height=70)
+    description = st.text_area("Description", height=70, key="reg_description")
 
-        c7, c8 = st.columns(2)
-        with c7:
-            brand_model = st.text_input("Brand / Model")
-        with c8:
-            serial_no = st.text_input("Serial No")
+    c7, c8 = st.columns(2)
+    with c7:
+        brand_model = st.text_input("Brand / Model", key="reg_brand_model")
+    with c8:
+        serial_no = st.text_input("Serial No", key="reg_serial_no")
 
-        c9, c10 = st.columns(2)
-        with c9:
-            date_of_purchase = st.date_input("Date of Purchase", value=None,
-                                              min_value=dt.date(1990, 1, 1), max_value=dt.date.today())
-        with c10:
-            purchased_from = st.text_input("Purchased From")
+    c9, c10 = st.columns(2)
+    with c9:
+        date_of_purchase = st.date_input("Date of Purchase", value=None,
+                                          min_value=dt.date(1990, 1, 1), max_value=dt.date.today(),
+                                          key="reg_date_of_purchase")
+    with c10:
+        purchased_from = st.text_input("Purchased From", key="reg_purchased_from")
 
-        c11, c12, c13 = st.columns(3)
-        with c11:
-            user = st.text_input("User *")
-        with c12:
-            condition = st.selectbox("Condition *", CONDITIONS)
-        with c13:
-            amount = st.number_input("Amount (LKR)", min_value=0.0, step=100.0, format="%.2f")
+    c11, c12, c13 = st.columns(3)
+    with c11:
+        user = st.text_input("User *", key="reg_user")
+    with c12:
+        condition = st.selectbox("Condition *", CONDITIONS, key="reg_condition")
+    with c13:
+        amount = st.number_input("Amount (LKR)", min_value=0.0, step=100.0, format="%.2f", key="reg_amount")
 
-        suggested_code = suggest_item_code(office, main_category, df)
-        item_code = st.text_input("Item Code *", value=suggested_code,
-                                   help="Auto-suggested as KMN/OfficeCode/CategoryCode/Number. Edit if needed.")
+    suggested_code = suggest_item_code(office, main_category, df)
+    item_code = st.text_input("Item Code *", value=suggested_code, key="reg_item_code",
+                               help="Auto-suggested as KMN/OfficeCode/CategoryCode/Number. Edit if needed.")
 
-        entered_by = st.session_state.get("auth_full_name", "")
-        st.caption(f"Entered by: **{entered_by}**")
+    entered_by = st.session_state.get("auth_full_name", "")
+    st.caption(f"Entered by: **{entered_by}**")
 
-        submitted = st.form_submit_button("💾 Save Asset", use_container_width=True)
+    submitted = st.button("💾 Save Asset", use_container_width=True, type="primary")
 
     if submitted:
         st.session_state["register_office"] = office
@@ -471,6 +471,11 @@ def page_asset_register():
             }
             append_row("Assets", ASSET_COLUMNS, row)
             st.success(f"✅ Asset **{item_code}** saved successfully.")
+            for k in ("reg_sub_location", "reg_sub_category", "reg_item_name", "reg_description",
+                      "reg_brand_model", "reg_serial_no", "reg_purchased_from", "reg_user",
+                      "reg_amount", "reg_item_code", "reg_location_sb", "reg_location_new",
+                      "reg_main_cat_sb", "reg_main_cat_new"):
+                st.session_state.pop(k, None)
             st.rerun()
 
 
