@@ -33,7 +33,7 @@ SPREADSHEET_URL = "https://docs.google.com/spreadsheets/d/1f6qisix5WFGTxLHNQL4xw
 OFFICES = ["CHILAW", "PALAVI"]
 OFFICE_CODE = {"CHILAW": "CH", "PALAVI": "PA"}
 
-CONDITIONS = ["New", "Good", "Fair", "Poor", "Damaged"]
+CONDITIONS = ["New", "Usable"]
 
 ASSET_STATUS_OPTIONS = ["Found", "Missing"]
 LOCATION_STATUS_OPTIONS = ["Not Changed", "Changed"]
@@ -425,7 +425,8 @@ def page_asset_register():
 
     c11, c12, c13 = st.columns(3)
     with c11:
-        user = st.text_input("User *", key="reg_user")
+        user = suggestable_select("User *", df["User"].tolist() if not df.empty else [],
+                                   key="reg_user", required=True)
     with c12:
         condition = st.selectbox("Condition *", CONDITIONS, key="reg_condition")
     with c13:
@@ -472,9 +473,9 @@ def page_asset_register():
             append_row("Assets", ASSET_COLUMNS, row)
             st.success(f"✅ Asset **{item_code}** saved successfully.")
             for k in ("reg_sub_location", "reg_sub_category", "reg_item_name", "reg_description",
-                      "reg_brand_model", "reg_serial_no", "reg_purchased_from", "reg_user",
+                      "reg_brand_model", "reg_serial_no", "reg_purchased_from",
                       "reg_amount", "reg_item_code", "reg_location_sb", "reg_location_new",
-                      "reg_main_cat_sb", "reg_main_cat_new"):
+                      "reg_main_cat_sb", "reg_main_cat_new", "reg_user_sb", "reg_user_new"):
                 st.session_state.pop(k, None)
             st.rerun()
 
